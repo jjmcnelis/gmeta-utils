@@ -1,0 +1,161 @@
+{
+  "type": "group",
+  "driver": "netCDF",
+  "name": "/",
+  "attributes": {
+    "start_year": 2017,
+    "source": "Daymet Software Version 3.0",
+    "Version_software": "Daymet Software Version 3.0",
+    "Version_data": "Daymet Data Version 3.0",
+    "Conventions": "CF-1.6",
+    "citation": "Please see http://daymet.ornl.gov/ for current Daymet data citation information",
+    "references": "Please see http://daymet.ornl.gov/ for current information on Daymet references",
+    "NCO": "\"4.6.0\"",
+    "nco_openmp_thread_number": 1
+  },
+  "dimensions": [
+    {
+      "name": "time",
+      "full_name": "/time",
+      "size": 12,
+      "type": "TEMPORAL",
+      "indexing_variable": "/time"
+    },
+    {
+      "name": "nv",
+      "full_name": "/nv",
+      "size": 2
+    },
+    {
+      "name": "y",
+      "full_name": "/y",
+      "size": 584,
+      "type": "HORIZONTAL_Y",
+      "indexing_variable": "/y"
+    },
+    {
+      "name": "x",
+      "full_name": "/x",
+      "size": 284,
+      "type": "HORIZONTAL_X",
+      "indexing_variable": "/x"
+    }
+  ],
+  "arrays": {
+    "time_bnds": {
+      "datatype": "Float32",
+      "dimensions": [
+        "/time",
+        "/nv"
+      ],
+      "attributes": {
+        "time": "days since 1980-01-01 00:00:00 UTC"
+      },
+      "structural_info": {
+        "COMPRESS": "DEFLATE"
+      }
+    },
+    "lat": {
+      "datatype": "Float32",
+      "dimensions": [
+        "/y",
+        "/x"
+      ],
+      "attributes": {
+        "long_name": "latitude coordinate",
+        "standard_name": "latitude"
+      },
+      "unit": "degrees_north",
+      "structural_info": {
+        "COMPRESS": "DEFLATE"
+      }
+    },
+    "lon": {
+      "datatype": "Float32",
+      "dimensions": [
+        "/y",
+        "/x"
+      ],
+      "attributes": {
+        "long_name": "longitude coordinate",
+        "standard_name": "longitude"
+      },
+      "unit": "degrees_east",
+      "structural_info": {
+        "COMPRESS": "DEFLATE"
+      }
+    },
+    "time": {
+      "datatype": "Float32",
+      "dimensions": [
+        "/time"
+      ],
+      "attributes": {
+        "long_name": "time",
+        "calendar": "standard",
+        "bounds": "time_bnds"
+      },
+      "unit": "days since 1980-01-01 00:00:00 UTC",
+      "structural_info": {
+        "COMPRESS": "DEFLATE"
+      }
+    },
+    "tmin": {
+      "datatype": "Float32",
+      "dimensions": [
+        "/time",
+        "/y",
+        "/x"
+      ],
+      "attributes": {
+        "missing_value": -9999,
+        "coordinates": "lat lon",
+        "cell_methods": "area: mean time: minimum within days time: mean over days",
+        "long_name": "monthly average of daily minimum temperature"
+      },
+      "unit": "degrees C",
+      "nodata_value": -9999,
+      "srs": {
+        "wkt": "PROJCRS[\"unnamed\",BASEGEOGCRS[\"unknown\",DATUM[\"unnamed\",ELLIPSOID[\"Spheroid\",6378137,298.25723,LENGTHUNIT[\"metre\",1,ID[\"EPSG\",9001]]]],PRIMEM[\"Greenwich\",0,ANGLEUNIT[\"degree\",0.0174532925199433,ID[\"EPSG\",9122]]]],CONVERSION[\"unnamed\",METHOD[\"Lambert Conic Conformal (2SP)\",ID[\"EPSG\",9802]],PARAMETER[\"Latitude of false origin\",42.5,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8821]],PARAMETER[\"Longitude of false origin\",-100,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8822]],PARAMETER[\"Latitude of 1st standard parallel\",25,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8823]],PARAMETER[\"Latitude of 2nd standard parallel\",60,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8824]],PARAMETER[\"Easting at false origin\",0,LENGTHUNIT[\"metre\",1],ID[\"EPSG\",8826]],PARAMETER[\"Northing at false origin\",0,LENGTHUNIT[\"metre\",1],ID[\"EPSG\",8827]]],CS[Cartesian,2],AXIS[\"easting\",east,ORDER[1],LENGTHUNIT[\"metre\",1,ID[\"EPSG\",9001]]],AXIS[\"northing\",north,ORDER[2],LENGTHUNIT[\"metre\",1,ID[\"EPSG\",9001]]]]",
+        "data_axis_to_srs_axis_mapping": [
+          3,
+          2
+        ]
+      },
+      "structural_info": {
+        "COMPRESS": "DEFLATE"
+      }
+    },
+    "x": {
+      "datatype": "Float32",
+      "dimensions": [
+        "/x"
+      ],
+      "attributes": {
+        "long_name": "x coordinate of projection",
+        "standard_name": "projection_x_coordinate"
+      },
+      "unit": "m",
+      "structural_info": {
+        "COMPRESS": "DEFLATE"
+      }
+    },
+    "y": {
+      "datatype": "Float32",
+      "dimensions": [
+        "/y"
+      ],
+      "attributes": {
+        "long_name": "y coordinate of projection",
+        "standard_name": "projection_y_coordinate"
+      },
+      "unit": "m",
+      "structural_info": {
+        "COMPRESS": "DEFLATE"
+      }
+    }
+  },
+  "structural_info": {
+    "NC_FORMAT": "NETCDF4_CLASSIC"
+  }
+}

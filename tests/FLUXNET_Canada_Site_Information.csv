@@ -1,0 +1,34 @@
+file_name,num_files,siteid,fluxnetid,sitename,site_desc,lat,lon,start_year,end_year,pi, pi_email
+0-Fluxnet-Canada.zip,147,9999,n/a,n/a,Network-wide data sets.,-99.9999,-9999.99,1994,2014,n/a,n/a
+AB-Grassland.zip,129,233,CA-Let,AB-Lethbridge Grassland,Alberta - Mixed Grass Prairie.,49.70919,-112.94025,1998,2008, Larry Flanagan,larry.flanagan@uleth.ca
+AB-WPeatland-MayPoorFen.zip,54,2608,CA-WP2,AB-Western Peatland Poor Fen,Alberta - Western Peatland - Poor Fen (Sphagnum moss).,55.5375,-112.3343,2004,2006, Larry Flanagan,larry.flanagan@uleth.ca
+AB-WPeatland-TonysRichFen.zip,52,2619,CA-WP3,AB-Western Peatland Rich Fen,Alberta - Western Peatland - Rich Fen  (Carex).,54.47,-113.32,2004,2006, Larry Flanagan ,larry.flanagan@uleth.ca
+AB-WPeatland-TreedFen.zip,259,292,CA-WP1,AB-Western Peatland,"Alberta - Western Peatland - LaBiche River,Black Spruce/Larch Fen.",54.9538,-112.46698,2003,2009, Larry Flanagan,larry.flanagan@uleth.ca
+BC-DFir1949.zip,1452,120,CA-Ca1,BC-Campbell River 1949 Douglas-fir,British Columbia - 1948 Douglas-fir Stand.,49.8673,-125.3336,1997,2010, Andy Black,andrew.black@ubc.ca
+BC-HarvestDFir1988.zip,1033,122,CA-Ca3,BC-Campbell River 1988 Douglas-fir,British Columbia - Pole sapling Douglas-fir stand.,49.5346,-124.9004,1995,2010, Andy Black,andrew.black@ubc.ca
+BC-HarvestDFir2000.zip,1078,121,CA-Ca2,BC-Campbell River 2000 Douglas-fir,British Columbia - Clearcut Douglas-fir stand (harvested winter 1999/2000).,49.8705,-125.2909,2000,2010, Andy Black,andrew.black@ubc.ca
+MB-NOldBlackSpruce.zip,18,234,CA-Man,MB-Northern Old Black Spruce,Manitoba - Northern Old Black Spruce (former BOREAS Northern Study Area).,55.88,-98.481,1994,2008, Allison Dunn (1994-2006); Brian Amiro (2007-2008),adunn@deas.harvard.edu; Brian_Amiro@umanitoba.ca
+NB-BFir1967-NashwL01.zip,109,239,CA-Na1,NB-Nashwaak Lake 1 1967 Balsam Fir,New Brunswick - 1967 Balsam Fir - Nashwaak Lake Site 01 (Mature balsam fir forest).,46.47384,-67.09933,2002,2005, Charles Bourque,cbourque@unb.ca 
+NB-BFir1975-CharlieL01.zip,41,125,CA-Cha,NB-Charlie Lake 1 1975 Balsam Fir,New Brunswick - Charlie Lake site 01 (immature balsam fir forest to be thinned in year 3).,45.885,-67.357,2004,2005, Charles Bourque,cbourque@unb.ca 
+ON-BordenMixedWood.zip,91,119,CA-Cbo,ON-Borden Mixedwood,Ontario - Mixed Deciduous; Borden Forest Site.,44.3185,-79.9342,1995,2012, Ralf Staebler,Ralf.Staebler@ec.gc.ca
+ON-Deciduous-TP.zip,253,4180,CA-TPD,ON-Turkey Point Deciduous,Ontario - Mixed Deciduous; Turkey Point Site.,42.6609,-80.5576,2012,2014,Althaf Arain,arainm@@mcmaster.ca
+ON-EPeatland-MerBleue.zip,1533,235,CA-Mer,ON-Mer Bleue Eastern Peatland,Ontario - Eastern Peatland; Mer Bleue.,45.4094,-75.5187,1998,2010, Peter Lafleur,plafleur@trentu.ca
+ON-HarvestMixedWood1989.zip,248,118,On-JMW,ON-Juvenile Mixedwood,Ontario - Childerhose Juvenile Boreal Mixedwood Forest harvested in 1989.,48.133,-81.628,2006,2010, Harry McCaughey,mccaughe@post.queensu.ca
+ON-OldMixedWood-GhogR.zip,1337,227,CA-Gro,ON-Groundhog River Mixedwood,Ontario - Groundhog River; Boreal Mixedwood Forest.,48.2173,-82.1555,2002,2010, Harry McCaughey,mccaughe@post.queensu.ca
+ON-PlantnWPine1939-TP.zip,1305,290,CA-TP4,ON-Turkey Point 1939 White Pine,Ontario - Turkey Point 1939 Plantation White Pine.,42.7098,-80.3574,2002,2014, Altaf Arain,arainm@mcmaster.ca
+ON-PlantnWPine1974-TP,1106,289,CA-TP3,ON-Turkey Point 1974 White Pine,Ontario - Turkey Point 1974 Plantation White Pine.,42.7068,-80.3483,2002,2014, Altaf Arain,arainm@mcmaster.ca
+ON-PlantnWPine1989-TP.zip,602,288,CA-TP2,ON-Turkey Point 1989 White Pine,Ontario - Turkey Point 1989 Plantation White Pine.,42.7744,-80.4588,2002,2008, Altaf Arain,arainm@mcmaster.ca
+ON-PlantnWPine2002-TP.zip,1106,287,CA-TP1,ON-Turkey Point 2002 White Pine,Ontario - Turkey Point 2002 Plantation White Pine.,42.6609,-80.5595,2002,2014, Altaf Arain,arainm@mcmaster.ca
+QC-BSpruceJPineCut.zip,1032,268,CA-Qcu,QC-2000 Harvested Black Spruce/Jack Pine (HBS00),Quebec - Eastern Boreal; Black Spruce/Jack Pine Cutover.,49.2671,-74.0365,2001,2010, Hank Margolis,Hank.Margolis@sbf.ulaval.ca
+QC-HarvestBS1975.zip,392,2840,CA-Qc2,QC-1975 Harvested Black Spruce (HBS75),Quebec - Eastern Boreal; Black Spruce forest harvested in 1975.,49.7598,-74.5711,2007,2010, Hank Margolis,Hank.Margolis@sbf.ulaval.ca
+QC-MatureBSpruce.zip,866,269,CA-Qfo,QC-Eastern Old Black Spruce (EOBS),Quebec - Eastern Boreal; Mature Black Spruce.,49.6925,-74.342,2003,2010, Hank Margolis,Hank.Margolis@sbf.ulaval.ca
+SK-Fen.zip,373,276,CA-Fen,SK-Fen,Saskatchewan - Western Boreal; wetland.,53.8021,-104.618,2002,2010, Andy Black; Alan Barr,andrew.black@ubc.ca;alan.barr@ec.gc.ca
+SK-Fire1977.zip,22,273,CA-SF1,SK-1977 Fire,Saskatchewan - Western Boreal; forest burned in 1977.,54.485,-105.8176,2002,2006, Brian Amiro,Brian_Amiro@umanitoba.ca
+SK-Fire1989.zip,23,277,CA-SF2,SK-1989 Fire,Saskatchewan - Western Boreal; forest burned in 1989.,54.2539,-105.8775,2001,2006, Brian Amiro,Brian_Amiro@umanitoba.ca
+SK-Fire1998.zip,22,278,CA-SF3,SK-1998 Fire,Saskatchewan - Western Boreal; forest burned in 1998.,54.0916,-106.0053,1993,2006, Brian Amiro,Brian_Amiro@umanitoba.ca
+SK-HarvestJP1975.zip,598,284,CA-SJ3,SK-1975 (Young) Jack Pine,Saskatchewan - Western Boreal; Jack Pine forest harvested in 1975 (BOREAS Young Jack Pine).,53.8758,-104.6453,1993,2010, Alan Barr,alan.barr@ec.gc.ca
+SK-HarvestJP1994.zip,804,279,CA-SJ1,SK-1994 Jack Pine,Saskatchewan - Western Boreal; Jack Pine forest harvested in 1994.,53.9084,-104.6559,2001,2010, Shohei Murayama (2001-2003);  Alan Barr (after 2003),s.murayama@aist.go.jp; alan.barr@ec.gc.ca
+SK-HarvestJP2002.zip,795,280,CA-SJ2,SK-2002 Jack Pine,Saskatchewan - Western Boreal; Jack Pine forest harvested in 2002.,53.9447,-104.6493,2002,2010, Andy Black; Alan Barr,andrew.black@ubc.ca; alan.barr@ec.gc.ca
+SK-OldAspen.zip,1629,258,CA-Oas,SK-Old Aspen,Saskatchewan - Western Boreal; Mature Aspen.,53.6289,-106.1978,1993,2010, Andy Black; Alan Barr,andrew.black@ubc.ca; alan.barr@ec.gc.ca
+SK-OldBlackSpruce.zip,1553,259,CA-Obs,SK-Southern Old Black Spruce,Saskatchewan - Western Boreal; Mature Black Spruce.,53.9872,-105.1178,1993,2010, Andy Black; Alan Barr,andrew.black@ubc.ca; alan.barr@ec.gc.ca
+SK-OldJackPine.zip,1432,260,CA-Ojp,SK-Old Jack Pine,Saskatchewan - Western Boreal; Mature Jack Pine.,53.9163,-104.692,1993,2010, Harry McCaughey; Andy Black; Alan Barr,mccaughe@post.queensu.ca; andrew.black@ubc.ca; alan.barr@ec.gc.ca

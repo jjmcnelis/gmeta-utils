@@ -1,0 +1,319 @@
+#!/usr/bin/env python3
+import os
+import sys
+import json
+import subprocess
+from datetime import datetime as dt
+__update__ = dt.now()
+__version__ = 0.1
+__contact__ = "github:jjmcnelis"
+__doc__ = '''
+    # DOC
+    #
+    # {}
+    # {}
+    # {}
+    #
+    # -----------------------------------------------------------------
+    #
+    #         gmeta -- bash shortcuts to handy data utils
+    #
+    # -----------------------------------------------------------------
+    #
+    #  A bunch of shortcuts (wrapped with Python 3) to key 
+    #  functionality of geospatial and tabular data wrangling utils:
+    #
+    #     - GDAL/OGR
+    #     - NCO
+    #     - XSV
+    #     - Fiona, Rasterio
+    # 
+    #  All tools/configurations are accessible through ordered lists 
+    #  of arguments that drill down to the desired functionality. The 
+    #  final two arguments that are passed:
+    #
+    #     1. an OPTIONAL keyword argument with a plain text input 
+    #        passed like: "KEYWORD=TEXT"
+    #     2. the name ( OR absolute path ) of the INPUT DATA FILE
+    #
+    #  The INPUT DATA FILE [2] will ALWAYS be the last argument 
+    #  passed to the gmeta utility.
+    #  
+    #  The OPTIONAL keyword argument will ALWAYS be the second to 
+    #  last argument, if it is required to access the desired function. 
+    #  There is a MAXIMUM of one keyword argument per execution.
+    # 
+    #  For instance, this will return the name of ALL variables that 
+    #  match the regex '.*KEYWORD.*':
+    #
+    #     $ gmeta find var=<KEYWORD> <INPUT FILE>
+    #
+    #  The 'find var' sequence is only available for formats that have 
+    #  fields (tables, vectors) or variable names (mdim formats like 
+    #  HDF/netCDF). 
+    #
+    #  Regular invocations without a keyword argument look like:
+    #
+    #     $ gmeta find lat <INPUT FILE>
+    #
+    #
+    # -----------------------------------------------------------------
+    #                         COMMANDS
+    # -----------------------------------------------------------------
+    #
+    #  info
+    #  find
+    #  list
+    #
+    #
+    # -----------------------------------------------------------------
+    #                           NOTES
+    # -----------------------------------------------------------------
+    #  
+    #  gdal/ogr/gdalmdim extensions:
+    #
+    #     derived gtiff hfa mem vrt aaigrid adrg aigrid airsar 
+    #     arg blx bmp bsb cals ceos ceos2 coasp cosar ctg dimap 
+    #     dted e00grid elas envisat ers fit gff gsg gxf hf2 
+    #     idrisi ignfheightasciigrid ilwis ingr iris iso8211 
+    #     jaxapalsar jdem  kmlsuperoverlay l1b leveller map mrf 
+    #     msgn ngsgeoid nitf northwood pds prf r raw rmf rs2 
+    #     safe saga sdts sentinel2 sgi sigdem srtmhgt terragen 
+    #     til tsx usgsdem xpm xyz zmap rik ozi grib eeda plmosaic 
+    #     rda wcs wms wmts daas rasterlite mbtiles pdf tiledb 
+    #     webp epsilon dods openjpeg netcdf kea hdf5 hdf4 gif 
+    #     jpeg png pcraster fits pcidsk postgisraster jpegls
+    #
+    #
+    # -----------------------------------------------------------------
+'''.format( __update__, __version__, __contact__ )
+
+
+
+
+
+
+def _exit_error(message: str, doc: bool=True):
+    message_ = "ERROR: {} Exiting.\n".format(message)
+    if doc: message_ = "HELP\n{}{}".format(__doc__, message_)
+    sys.exit(print(message_))
+
+
+def _get_frmt(file: str):
+    if os.path.splitext(file)[1][1:] in __config__['formats']['tabl']:
+        return 'tabl'
+    if os.path.splitext(file)[1][1:] in __config__['formats']['rast']:
+        return 'rast'
+    if os.path.splitext(file)[1][1:] in __config__['formats']['vect']:
+        return 'vect'
+    if os.path.splitext(file)[1][1:] in __config__['formats']['mdim']:
+        return 'mdim'
+    else:
+        return None
+
+
+def _sys_call(cmd, dcode: bool=False, strp: bool=False, js: bool=False):
+    # Call the utility in shell or list mode.
+    if type(cmd) is str:
+        sys_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+    else:
+        sys_output = subprocess.check_output(cmd)
+    # If dcode flag, decode as utf-8.
+    if dcode: sys_output = sys_output.decode('utf-8')  
+    # If the strp flag, strip newlines and tabs.
+    if strp: sys_output = " ".join(sys_output.split()).replace("\n","")
+    # If the js flag, load as string.
+    if js: sys_output = json.loads(sys_output)
+    # Return the formatted result!
+    return sys_output
+
+
+__CMD__ = {
+    'tabl': {
+        'info': """xsv stats {} """,
+        'find_vars': """xsv headers {} -j | grep -o '.*{}.*'""",
+        'list_cols': """xsv headers {} -j """,
+    },
+    'mdim': {
+        'info': """gdalmdiminfo {} -nopretty """,
+        'var1': """gdalmdiminfo {} -array {} -detailed """,
+        'var2': """ncks -v {} --jsn {} """,
+        'time': """ncks -v time --jsn --dt_fmt=2 {} """,
+        'list_dims': """ncks --cdl -m {} | cut -d ':' -f 1 | cut -d '=' -s -f 1 """,
+        'list_grps': """ncks -m {} | grep 'group:' | cut -d ':' -f 2 | cut -d ' ' -f 2 | sort """,
+        'list_vars': """ncks --trd -m {} | grep -e ': type' | cut -f 1 -d ' ' | sed 's/://' | sort """,
+        'list_var_atts': """ncks --trd -m -m ${} | grep -e -i "^${} attribute [0-9]+: ${}" | cut -f 11- -d ' ' | sort """,
+        'find_vars': """ncks --trd -m {} | grep -e ': type' | cut -f 1 -d ' ' | sed 's/://' | sort | grep -o '.*{}.*'""",
+    },
+    'vect': {
+        'fioinfo': """fio info {} """,
+        'ogrinfo': """ogrinfo {} -ro -al -so """,
+        'lyrinfo': """fio info --layer={} {} """,
+        # 'list_flds': """ """,
+    },
+    'rast': {
+        'gdalinfo': """gdalinfo -proj4 -json {} """,
+    },
+}
+
+
+__lookup__ = {
+    "info": {
+        "tabl": lambda f: _sys_call(__CMD__['tabl']['info'].format(f), dcode=True), 
+        "mdim": lambda f: _sys_call(__CMD__['mdim']['info'].format(f), js=True),
+        "rast": lambda f: _sys_call(__CMD__['rast']['gdalinfo'].format(f), dcode=True, strp=True, js=True),
+        "vect": lambda f: _sys_call(__CMD__['vect']['fioinfo'].format(f), js=True),
+        "layer": lambda f: _sys_call(__CMD__['vect']['lyrinfo'].format(f), js=True),
+    },
+    "find": {
+        "lon": {
+            "tabl": lambda f: _sys_call(__CMD__['tabl']['find_vars'].format(f, "lon"), dcode=True, strp=True), 
+            "mdim": lambda f: _sys_call(__CMD__['mdim']['find_vars'].format(f, "lon"), dcode=True, strp=True),
+        },
+        "lat": {
+            "tabl": lambda f: _sys_call(__CMD__['tabl']['find_vars'].format(f, "lat"), dcode=True, strp=True), 
+            "mdim": lambda f: _sys_call(__CMD__['mdim']['find_vars'].format(f, "lat"), dcode=True, strp=True),
+        },
+        "var": {
+            "tabl": lambda f, kw: _sys_call(__CMD__['tabl']['find_vars'].format(f, kw), dcode=True, strp=True), 
+            "mdim": lambda f, kw: _sys_call(__CMD__['mdim']['find_vars'].format(f, kw), dcode=True, strp=True),
+        },
+    },
+    "list": {
+        "grps": {
+            "mdim": lambda f: _sys_call(__CMD__['mdim']['list_grps'].format(f), dcode=True, strp=True),
+        },
+        "dims": {
+            "mdim": lambda f: _sys_call(__CMD__['mdim']['list_dims'].format(f), dcode=True, strp=True),
+        },
+        "vars": {
+            "tabl": lambda f: _sys_call(__CMD__['tabl']['list_cols'].format(f), dcode=True, strp=True), 
+            "mdim": lambda f: _sys_call(__CMD__['mdim']['list_vars'].format(f), dcode=True, strp=True),
+            # "vect": lambda f: _sys_call(__CMD__['mdim']['list_flds'].format(f), js=True),
+        },
+        #"atts": {},
+    },
+}
+
+__usage__ = '''
+    #  
+    #  # HELP
+    #
+    #  ## USE
+    #  
+    #  TABLE: any tabular data in a text file
+    #  MULTID: hdf4/5 + netCDF
+    #  RASTER: tif, hdf, img, grd, envi, netcdf, etc (GDAL support)
+    #  VECTOR: shp, dbf, wkt, kml, kmz, geojson, etc (OGR support)
+    #
+    #  Info:
+    #    $  gmeta info [TABLE|MULTID|RASTER|VECTOR]
+    #
+    #  Find:
+    #    $  gmeta find var=[REGEX/SUBSTRING] [TABLE|MULTID|VECTOR]
+    #
+    #  List:
+    #    $  gmeta list vars [TABLE|MULTID|VECTOR]
+    #    $  gmeta list grps [MULTID]
+    #    $  gmeta list dims [MULTID]
+    #
+    # -----------------------------------------------------------------
+    # 
+    # {}
+    # {}
+    # {}
+    # 
+'''.format( __update__, __version__, __contact__ )
+
+__config__ = {
+    # Various outputs from gdal-config.
+    'gdal-config': {
+        # The GDAL version.
+        'version': _sys_call('gdal-config --version'),
+        # The list of supported extensions.
+        'formats': str(_sys_call('gdal-config --formats')).split(" "),
+        # The shared data directory.
+        'datadir': _sys_call('gdal-config --datadir'),
+        # The list of built and configured libs.
+        'libsdir': str(_sys_call('gdal-config --libs')).split(" "),
+        # Dependencies.
+        'dep-libs': str(_sys_call('gdal-config --dep-libs')).split(" "),
+    },
+    # Maps supported extensions to: [ 'tabl', 'rast', 'vect', 'mdim' ]
+    'formats': {
+        'tabl': ['txt', 'csv', 'tsv', 'dat'],
+        'rast': ['gtiff', 'tif', 'grd', 'img'],
+        'vect': ['shp', 'kml', 'kmz', 'geojson', 'json', 'dbf'],
+        'mdim': ['hdf4', 'hdf5', 'h5', 'nc', 'nc4', 'dods'],
+    }
+}
+
+
+def _handle_args():
+    
+    # First argument (command) and last argument (file) are important.
+    try:
+        in_command, in_file = sys.argv[1], sys.argv[-1]
+    except:
+        _exit_error("a minimum of two arguments required.")
+        
+    # Get a list of valid commands.
+    cmds = list(__lookup__.keys())
+        
+    # If the first argument is in the commands list, proceed.
+    if in_command not in cmds:
+        print("VALID COMMANDS: {}".format(cmds))
+        _exit_error("arg1 is not a valid cmd input: {}".format(in_command))
+    
+    # If the second argument is a valid file path, proceed.
+    if not os.path.isfile(in_file):
+        _exit_error("input file path is invalid: {}".format(in_file))
+    
+    # Get the file type/format (extension based).
+    in_frmt = _get_frmt(in_file)
+        
+    # If the first argument is a supportted format, proceed.
+    if in_frmt is None:
+        _exit_error("input file is not supported.".format(in_file))
+
+    # Try to select the actual lambda function via the args.
+    in_args = sys.argv[2:-1]
+    in_kywd = None
+        
+    # Try to look up system call.
+    try:
+        
+        # Get the function lookup dictionary.
+        func = __lookup__[in_command]
+        
+        # Loop over the parameters/arguments.
+        for a in in_args:
+            
+            # If there's equal sign in argument, must be keyword (last).
+            if '=' in a:
+                
+                # Split by the equal sign and replace keyword arg.
+                a, in_kywd = a.split("=")
+                
+            # Update the selection.
+            func = func[a]
+            
+        # Finally, select the flavor of function based on file format.
+        func = func[in_frmt]
+        
+    except Exception as e:
+        raise(e)
+        #_exit_error("args did not yield a function via __lookup__.")
+        
+    # Return the file, command, and format.
+    return func, in_file, in_kywd
+
+
+if __name__ == "__main__":
+
+    # Handle input arguments.
+    func, file, kywd = _handle_args()
+    
+    # Call one of two ways (based on keyword or no keyword).
+    result = func(file, kywd) if kywd is not None else func(file)
+    print(result)

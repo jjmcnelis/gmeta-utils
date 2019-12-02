@@ -1,0 +1,136 @@
+{
+  "description": "Snowmelt_Timing_North_America_2001.tif",
+  "driverShortName": "GTiff",
+  "driverLongName": "GeoTIFF",
+  "files": [
+    "Snowmelt_Timing_North_America_2001.tif"
+  ],
+  "size": [
+    28800,
+    19200
+  ],
+  "coordinateSystem": {
+    "wkt": "PROJCRS[\"Unknown_datum_based_upon_the_custom_spheroid_Sinusoidal\",\n    BASEGEOGCRS[\"GCS_Unknown_datum_based_upon_the_custom_spheroid\",\n        DATUM[\"Not_specified_based_on_custom_spheroid\",\n            ELLIPSOID[\"Custom_spheroid\",6371007.181,0,\n                LENGTHUNIT[\"metre\",1,\n                    ID[\"EPSG\",9001]]]],\n        PRIMEM[\"Greenwich\",0,\n            ANGLEUNIT[\"degree\",0.0174532925199433,\n                ID[\"EPSG\",9122]]]],\n    CONVERSION[\"unnamed\",\n        METHOD[\"Sinusoidal\"],\n        PARAMETER[\"Longitude of natural origin\",0,\n            ANGLEUNIT[\"degree\",0.0174532925199433],\n            ID[\"EPSG\",8802]],\n        PARAMETER[\"False easting\",0,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8806]],\n        PARAMETER[\"False northing\",0,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8807]]],\n    CS[Cartesian,2],\n        AXIS[\"easting\",east,\n            ORDER[1],\n            LENGTHUNIT[\"metre\",1,\n                ID[\"EPSG\",9001]]],\n        AXIS[\"northing\",north,\n            ORDER[2],\n            LENGTHUNIT[\"metre\",1,\n                ID[\"EPSG\",9001]]]]",
+    "dataAxisToSRSAxisMapping": [
+      1,
+      2
+    ]
+  },
+  "geoTransform": [
+    -13343406.236,
+    463.31271652749973,
+    0.0,
+    10007554.676997999,
+    0.0,
+    -463.31271652749973
+  ],
+  "metadata": {
+    "": {
+      "AREA_OR_POINT": "Area"
+    },
+    "IMAGE_STRUCTURE": {
+      "COMPRESSION": "LZW",
+      "INTERLEAVE": "BAND"
+    }
+  },
+  "cornerCoordinates": {
+    "upperLeft": [
+      -13343406.236,
+      10007554.677
+    ],
+    "lowerLeft": [
+      -13343406.236,
+      1111950.52
+    ],
+    "lowerRight": [
+      -0.0,
+      1111950.52
+    ],
+    "upperRight": [
+      -0.0,
+      10007554.677
+    ],
+    "center": [
+      -6671703.118,
+      5559752.598
+    ]
+  },
+  "wgs84Extent": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -123.1935899,
+          90.0
+        ],
+        [
+          -121.8511934,
+          10.0
+        ],
+        [
+          -0.0,
+          10.0
+        ],
+        [
+          -0.5093725,
+          90.0
+        ],
+        [
+          -123.1935899,
+          90.0
+        ]
+      ]
+    ]
+  },
+  "bands": [
+    {
+      "band": 1,
+      "block": [
+        128,
+        128
+      ],
+      "type": "Byte",
+      "colorInterpretation": "Gray",
+      "noDataValue": 255.0,
+      "overviews": [
+        {
+          "size": [
+            14400,
+            9600
+          ]
+        },
+        {
+          "size": [
+            7200,
+            4800
+          ]
+        },
+        {
+          "size": [
+            3600,
+            2400
+          ]
+        },
+        {
+          "size": [
+            1800,
+            1200
+          ]
+        },
+        {
+          "size": [
+            900,
+            600
+          ]
+        },
+        {
+          "size": [
+            600,
+            400
+          ]
+        }
+      ],
+      "metadata": {}
+    }
+  ]
+}
