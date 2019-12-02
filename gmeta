@@ -92,7 +92,7 @@ __doc__ = '''
 
 def _exit_error(message: str, doc: bool=True):
     message_ = "ERROR: {} Exiting.\n".format(message)
-    if doc: message_ = "HELP\n{}{}".format(__doc__, message_)
+    if doc: message_ = "HELP\n{}{}".format(__usage__, message_)
     sys.exit(print(message_))
 
 
