@@ -9,90 +9,61 @@ __update__ = dt.now()
 __version__ = 0.1
 __contact__ = "github:jjmcnelis"
 __doc__ = '''
-    # DOC
     #
-    # {}
-    # {}
-    # {}
+    #   {}
+    #   {}
+    #   {}
     #
-    # -----------------------------------------------------------------
-    #
-    #         gmeta -- bash shortcuts to handy data utils
-    #
-    # -----------------------------------------------------------------
+    #  gmeta -- bash shortcuts to handy data utils
     #
     #  A bunch of shortcuts (wrapped with Python 3) to key 
     #  functionality of geospatial and tabular data wrangling utils:
-    #
-    #     - GDAL/OGR
-    #     - NCO
-    #     - XSV
-    #     - Fiona, Rasterio
+    #   a. GDAL/OGR, b. NCO, c. XSV, d. Fiona + Rasterio
     # 
-    #  All tools/configurations are accessible through ordered lists 
-    #  of arguments that drill down to the desired functionality. The 
-    #  final two arguments that are passed:
+    #  All tools are accessed using ordered lists of arguments that 
+    #  drill down to some system call. The last two arguments are 
+    #  special --
     #
     #     1. an OPTIONAL keyword argument with a plain text input 
     #        passed like: "KEYWORD=TEXT"
     #     2. the name ( OR absolute path ) of the INPUT DATA FILE
     #
-    #  The INPUT DATA FILE [2] will ALWAYS be the last argument 
-    #  passed to the gmeta utility.
-    #  
-    #  The OPTIONAL keyword argument will ALWAYS be the second to 
-    #  last argument, if it is required to access the desired function. 
-    #  There is a MAXIMUM of one keyword argument per execution.
-    # 
-    #  For instance, this will return the name of ALL variables that 
-    #  match the regex '.*KEYWORD.*':
+    #  The input file is always the last argument. The optional keyword
+    #  argument is second to last; e.g this returns the names of ALL 
+    #  variables that match regex: '.*KEYWORD.*' --
     #
-    #     $ gmeta find var=<KEYWORD> <INPUT FILE>
+    #     $ gmeta find var=[KEYWORD] [FILE]
     #
-    #  The 'find var' sequence is only available for formats that have 
-    #  fields (tables, vectors) or variable names (mdim formats like 
-    #  HDF/netCDF). 
+    #  'find var' is available for formats that have fields/columns/
+    #  variables/etc (tables, multidims, vectors). 
     #
-    #  Regular invocations without a keyword argument look like:
+    #  HELP
+    #   USE
+    #    TABLE: any tabular data in a text file
+    #    MULTID: hdf4/5 + netCDF
+    #    RASTER: tif, hdf, img, grd, envi, netcdf, etc (GDAL support)
+    #    VECTOR: shp, dbf, wkt, kml, kmz, geojson, etc (OGR support)
     #
-    #     $ gmeta find lat <INPUT FILE>
+    #    Info:
+    #     $  gmeta info [TABLE|MULTID|RASTER|VECTOR]
     #
+    #    Find:
+    #     $  gmeta find var=[REGEX/SUBSTRING] [TABLE|MULTID|VECTOR]
     #
-    # -----------------------------------------------------------------
-    #                         COMMANDS
-    # -----------------------------------------------------------------
-    #
-    #  info
-    #  find
-    #  list
+    #    List:
+    #     $  gmeta list vars [TABLE|MULTID|VECTOR]
+    #     $  gmeta list grps [MULTID]
+    #     $  gmeta list dims [MULTID]
     #
     #
-    # -----------------------------------------------------------------
-    #                           NOTES
-    # -----------------------------------------------------------------
-    #  
-    #  gdal/ogr/gdalmdim extensions:
-    #
-    #     derived gtiff hfa mem vrt aaigrid adrg aigrid airsar 
-    #     arg blx bmp bsb cals ceos ceos2 coasp cosar ctg dimap 
-    #     dted e00grid elas envisat ers fit gff gsg gxf hf2 
-    #     idrisi ignfheightasciigrid ilwis ingr iris iso8211 
-    #     jaxapalsar jdem  kmlsuperoverlay l1b leveller map mrf 
-    #     msgn ngsgeoid nitf northwood pds prf r raw rmf rs2 
-    #     safe saga sdts sentinel2 sgi sigdem srtmhgt terragen 
-    #     til tsx usgsdem xpm xyz zmap rik ozi grib eeda plmosaic 
-    #     rda wcs wms wmts daas rasterlite mbtiles pdf tiledb 
-    #     webp epsilon dods openjpeg netcdf kea hdf5 hdf4 gif 
-    #     jpeg png pcraster fits pcidsk postgisraster jpegls
-    #
-    #
-    # -----------------------------------------------------------------
 '''.format( __update__, __version__, __contact__ )
+__usage__ = '''
 
+'''
 
 def _exit_error(message: str, doc: bool=True):
     message_ = "ERROR: {} Exiting.\n".format(message)
-    if doc: message_ = "HELP\n{}{}".format(__usage__, message_)
+    if doc: message_ = "HELP\n{}{}".format(__doc__, message_)
     sys.exit(print(message_))
 
 
@@ -111,45 +82,82 @@ def _get_frmt(file: str):
 
 def _sys_call(cmd, dcode: bool=False, strp: bool=False, js: bool=False):
     # Call the utility in shell or list mode.
-    if type(cmd) is str:
-        sys_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
-    else:
-        sys_output = subprocess.check_output(cmd)
+    kw = {'shell':True,'stderr':subprocess.STDOUT} if type(cmd) is str else {}
+    sys_output = subprocess.check_output(cmd, **kw)
+    # if type(cmd) is str:
+    #     sys_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+    # else:
+    #     sys_output = subprocess.check_output(cmd)
     # If dcode flag, decode as utf-8.
     if dcode: sys_output = sys_output.decode('utf-8')  
     # If the strp flag, strip newlines and tabs.
-    if strp: sys_output = " ".join(sys_output.split()).replace("\n","")
+    if strp: sys_output = ",".join(sys_output.split()).replace("\n","")
     # If the js flag, load as string.
     if js: sys_output = json.loads(sys_output)
     # Return the formatted result!
     return sys_output
 
 
+#
+# PYTHON JSON GRAB:
+#  {COMMAND} | python3 -c "import sys, json; print(json.load(sys.stdin)['{FIELD}'])" 
+#  {COMMAND} | python3 -c "import sys, json, pandas; print(pandas.read_csv(sys.stdin).to_json())" 
+# python3 -c "import sys, json; print(json.load(sys.stdin)['schema']['properties'].keys())"
+
 __cmd__ = {
+    
+    ## TABULAR DATASETS
+
     'tabl': {
-        'info': """xsv stats {file} """,
-        'find': """xsv headers {file} -j | grep -o '.*{var}.*'""",
-        'vars': """xsv headers {file} -j """,
+        'info': '''xsv stats {file} | python3 -c "import sys, json, pandas; print(pandas.read_csv(sys.stdin).to_json(orient='records'))" ''',
+        'count': '''xsv count {file} ''',
+        'find': '''xsv headers {file} -j | grep -o '.*{var}.*' ''',
+        'list_col': '''xsv headers {file} -j ''',
     },
+    
+    ## MULTIDIMENSIONAL DATASETS
+
     'mdim': {
-        'info': """gdalmdiminfo {file} -nopretty """,
-        'time': """ncks -v time --jsn --dt_fmt=2 {file} """,
-        'data': """ncks -s "%f\n" -H -C -v {var} {file}""",
-        'dims': """ncks --cdl -m {file} | cut -d ':' -f 1 | cut -d '=' -s -f 1 """,
-        'grps': """ncks -m {file} | grep 'group:' | cut -d ':' -f 2 | cut -d ' ' -f 2 | sort """,
-        'vars': """ncks --trd -m {file} | grep -e ': type' | cut -f 1 -d ' ' | sed 's/://' | sort """,
-        'find': """ncks --trd -m {file} | grep -e ': type' | cut -f 1 -d ' ' | sed 's/://' | sort | grep -o '.*{var}.*'""",
+        'info': '''gdalmdiminfo {file} -nopretty ''',
+        'count_rec': '''ncks --trd -M {file} | grep -E -i "Root record dimension 0:" | cut -f 8- -d ' ' | cut -f 2- -d '=' ''',
+        'count_dim': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(len(json.load(sys.stdin)['dimensions'])) " ''',
+        'count_var': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(len(json.load(sys.stdin)['variables'])) " ''',
+        'count_att': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(len(json.load(sys.stdin)['attributes'])) " ''',
+        'list_dim': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['dimensions'].keys()))) " ''',
+        'list_var': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['variables'].keys()))) " ''',
+        'list_att': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['attributes'].keys()))) " ''',
+        'list_grp': '''ncks -m {file} | grep 'group:' | cut -d ':' -f 2 | cut -d ' ' -f 2 | sort ''',
+        'find': '''ncks --trd -m {file} | grep -e ': type' | cut -f 1 -d ' ' | sed 's/://' | sort | grep -o '.*{var}.*' ''',
+        #'time': '''ncks -v time --jsn --dt_fmt=2 {file} ''',
+        #'data': '''ncks -s "%f\n" -H -C -v {var} {file} ''',
     },
+    
+    ## VECTOR DATASETS
+
     'vect': {
-        'info': """fio info {file} """,
-        #'info': """ogrinfo {file} -ro -al -so """,
+        'info': '''fio info {file} ''',
+        #'info': '''ogrinfo {file} -ro -al -so ''',
+        'count': '''fio info --count {file} ''',
+        'list_fld': '''fio info {file} --indent 2 | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['schema']['properties'].keys())))" ''',
         'lyr': {
-            'info': """fio info --layer={lyr} {file} """,
+            'info': '''fio info --layer={lyr} {file} ''',
         },
     },
+
+    ## RASTER DATASETS
+
     'rast': {
-        'info': """gdalinfo -proj4 -json {file} """,
+        
+        ### INFO
+        #'info': '''rio info -v {file} ''',
+        'info': '''gdalinfo -proj4 -json {file} ''',
+        
+        ### COUNT
+        #'count': '''rio info {file} | python3 -c "import sys, json; print(json.load(sys.stdin)['count'])" ''',
+        'count': '''gdalinfo -proj4 -json {file} | python3 -c "import sys, json; print(len(json.load(sys.stdin)['bands']))" '''
+    
     },
+
 }
 
 
@@ -176,80 +184,70 @@ class UnseenFormatter(Formatter):
 fmt = UnseenFormatter()
 
 __lookup__ = {
+    
+    ## PRINT COMPLETE METADATA (as json)
+    
     "info": {
-        "tabl": lambda a: {'cmd': fmt.format(__cmd__['tabl']['info'], **a), 'dcode': True},
+        "tabl": lambda a: {'cmd': fmt.format(__cmd__['tabl']['info'], **a), 'dcode': True, 'js': True},
         "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['info'], **a), 'js': True},
-        "rast": lambda a: {'cmd': fmt.format(__cmd__['rast']['info'], **a), 'dcode': True, 'strp': True, 'js': True},
+        "rast": lambda a: {'cmd': fmt.format(__cmd__['rast']['info'], **a), 'dcode': True, 'js': True},
         "vect": lambda a: {'cmd': fmt.format(__cmd__['vect']['info'], **a), 'js': True},
         "lyr": {
             'vect': lambda a: {'cmd': fmt.format( __cmd__['vect']['lyr']['info'], **a), 'js': True},
         },
     },
-    "data": {
-        #"tabl": lambda a: {'cmd': fmt.format(__cmd__['tabl']['info'], **a), 'dcode': True},
-        "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['data'], **a), 'js': True},
-        #"rast": lambda a: {'cmd': fmt.format(__cmd__['rast']['gdalinfo'], **a), 'dcode': True, 'strp': True, 'js': True},
-        #"vect": lambda a: {'cmd': fmt.format(__cmd__['vect']['info'], **a), 'js': True},  
+    
+    ## COUNT THE NUMBER OF OCCURRENCES OF A DATA CONSTRUCT
+    
+    "count": {
+        "tabl": lambda a: {'cmd': fmt.format(__cmd__['tabl']['count'], **a), 'dcode': True,},
+        "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['count_rec'], **a), 'dcode': True, 'strp': True},
+        "vect": lambda a: {'cmd': fmt.format(__cmd__['vect']['count'], **a), 'dcode': True, 'strp': True},
+        "rast": lambda a: {'cmd': fmt.format(__cmd__['rast']['count'], **a), 'dcode': True},
+        "dim": {
+            "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['count_dim'], **a), 'dcode':True, 'strp': True},
+        },
+        "var": {
+            "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['count_var'], **a), 'dcode': True, 'strp': True},
+        },
     },
+    
+    ## FIND THE NAMES OF DATA CONSTRUCTS
+    
     "find": {
-        "lon": {
-            "tabl": lambda a: {'cmd': fmt.format( __cmd__['tabl']['find'], **a), 'dcode': True, 'strp': True}, 
-            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['find'], **a), 'dcode': True, 'strp': True},
-        },
-        "lat": {
-            "tabl": lambda a: {'cmd': fmt.format( __cmd__['tabl']['find'], **a), 'dcode': True, 'strp': True}, 
-            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['find'], **a), 'dcode': True, 'strp': True},
-        },
         "var": {
             "tabl": lambda a: {'cmd': fmt.format( __cmd__['tabl']['find'], **a), 'dcode': True, 'strp': True}, 
             "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['find'], **a), 'dcode': True, 'strp': True},
         },
     },
+    
+    ## LIST THE NAMES OF DATA CONSTRUCTS
+    
     "list": {
-        "grps": {
-            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['grps'], **a), 'dcode': True, 'strp': True},
+        "grp": {
+            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['list_grp'], **a), 'dcode': True, 'strp': True},
         },
-        "dims": {
-            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['dims'], **a), 'dcode': True, 'strp': True},
+        "dim": {
+            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['list_dim'], **a), 'dcode': True, 'strp': True},
         },
-        "vars": {
-            "tabl": lambda a: {'cmd': fmt.format( __cmd__['tabl']['vars'], **a), 'dcode': True, 'strp': True}, 
-            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['vars'], **a), 'dcode': True, 'strp': True},
-            # "vect": lambda a: {'cmd': fmt.format( __cmd__['mdim']['list_flds'], **{'file': f, }), 'js': True},
+        "var": {
+            "tabl": lambda a: {'cmd': fmt.format( __cmd__['tabl']['list_col'], **a), 'dcode': True, 'strp': True}, 
+            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['list_var'], **a), 'dcode': True, 'strp': True},
+            "vect": lambda a: {'cmd': fmt.format( __cmd__['vect']['list_fld'], **a), 'dcode': True, 'strp': True},
         },
-        #"atts": {},
+        "att": {
+            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['list_att'], **a), 'dcode': True, 'strp': True},
+        },
     },
+    
+    ## DATA PRINTING
+    
+    # "data": {
+    #     "var": {
+    #         "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['data'], **a), 'dcode': True, 'strp': True},
+    #     },
+    # },
 }
-
-__usage__ = '''
-    #  
-    #  # HELP
-    #
-    #  ## USE
-    #  
-    #  TABLE: any tabular data in a text file
-    #  MULTID: hdf4/5 + netCDF
-    #  RASTER: tif, hdf, img, grd, envi, netcdf, etc (GDAL support)
-    #  VECTOR: shp, dbf, wkt, kml, kmz, geojson, etc (OGR support)
-    #
-    #  Info:
-    #    $  gmeta info [TABLE|MULTID|RASTER|VECTOR]
-    #
-    #  Find:
-    #    $  gmeta find var=[REGEX/SUBSTRING] [TABLE|MULTID|VECTOR]
-    #
-    #  List:
-    #    $  gmeta list vars [TABLE|MULTID|VECTOR]
-    #    $  gmeta list grps [MULTID]
-    #    $  gmeta list dims [MULTID]
-    #
-    # -----------------------------------------------------------------
-    # 
-    # {}
-    # {}
-    # {}
-    # 
-'''.format( __update__, __version__, __contact__ )
 
 __config__ = {
     # Various outputs from gdal-config.
@@ -339,13 +337,14 @@ if __name__ == "__main__":
 
     # Handle input arguments.
     ARGS = _handle_args()
-   
+    print("\n# INPUT: ---------> \n\n{}\n".format(ARGS['cmd']))
+    
     # Call one of two ways (based on keyword or no keyword).
     RESULT = _sys_call(**ARGS)
-    
-    if type(RESULT) in [dict, list]:
-        print(json.dumps(RESULT, indent=2))
-    else:
-        print(RESULT)
 
-    print("""\n{}\n""".format(json.dumps(ARGS, indent=2)))
+    # Print some debug info and the result.
+    if type(RESULT) in [dict, list]:
+        RESULT = json.dumps(RESULT, indent=2)
+    print("\n# RESULT: ---------> \n\n{}\n".format(RESULT))
+
+    

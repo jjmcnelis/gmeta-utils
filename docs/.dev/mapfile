@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+__author__ = 'jmcnelis'
+__versioninfo__ = (0, 1, 0)
+__version__ = '.'.join(map(str, __versioninfo__))
+__doc__ = '''
+---------------------------------------------------------------------
+
+SCRIPT: raster.py
+
+DESCRIPTION:
+
+    Generate default configurations (.map) for rasters in Mapserver.
+
+USAGE:
+
+    $  ./raster.py [raster file] [mapfile file]
+
+    ARGUMENTS:
+
+        [raster file]: an input raster file.
+        [mapfile file]: an output mapfile.
+
+---------------------------------------------------------------------
+'''
+import os
+import sys
+import json
+import mappyfile
+from subprocess import check_output
+
+# Get this scripts path to find the template directory.
+rastemplate = os.path.join(os.path.dirname(__file__), 'templates/raster.map')
+
+def mapfile(rasterfile: str, template: str=rastemplate):
+    """ """
+
+    # Get the filename and fullpath to its directory.
+    filename = os.path.basename(rasterfile)
+    filepath = os.path.dirname(os.path.abspath(rasterfile))
+    
+    # Call the gdalinfo utility and parse the json output.
+    data = json.loads(check_output(["gdalinfo", "-json", "-proj4", rasterfile]))
+
+    # Get some common properties about the input raster.
+    data_proj = data["coordinateSystem"]["proj4"]
+
+    # Get the maximum extent.
+    data_corners = data["cornerCoordinates"].values()
+    data_xcorners = [c[0] for c in data_corners]
+    data_ycorners = [c[1] for c in data_corners]
+    data_extent = [
+        min(data_xcorners),
+        min(data_ycorners),
+        max(data_xcorners),
+        max(data_ycorners),
+    ]
+
+    # Read the mapfile template with mappyfile.
+    with open(template) as f:
+        mf = mappyfile.load(f)
+        
+    # Update the 'shapepath' to the directory containing the raster.
+    mf['shapepath'] = "/data/"  # filepath
+
+    # Update raster template map data.
+    mf['name'] = "ORNL_DAAC_WMS"
+    mf['size'] = data["size"]
+    mf['units'] = "meters"
+    mf['projection'] = data_proj
+    mf['extent'] = data_extent
+
+    '''
+    # These are standardized I think. Unchanged for now.
+    # mf['status'] = 
+    # mf['debug'] = 
+    # mf['maxsize'] = 
+    # mf['imagecolor'] = 
+    # mf['outputformats'] = 
+    '''
+
+    '''
+    # Update map configuration.
+    # mf['config'] = {
+    #    "MS_NONSQUARE": "YES",
+    #    "PROJ_LIB": "/usr/share/proj/",
+    # }
+    '''
+
+    # Select the only layer from the raster template.
+    tmp_lyr = mf["layers"][0]
+    
+    # A list for the bands of the raster dataset.
+    layers = []
+
+    # Loop over the input raster bands and create layers (duplicate tmp_lyr).
+    for i, b in enumerate(data["bands"]):
+
+        # Duplicate layer template.
+        lyr = tmp_lyr.copy()  
+
+        # Assign raster layer name. Fall back to band number.
+        try:
+            name = b["description"]
+        except:
+            name = "{}_band{}".format(filename, b["band"])
+
+        # Data, Processing. Append to list.
+        lyr["name"] = name
+        lyr["data"] = [filename]  # [data["description"]]
+        lyr['processing'] = ["BANDS=%s" % b["band"]]
+        lyr["metadata"]["wms_title"] = name
+        lyr["metadata"]["wms_extent"] = " ".join([str(f) for f in mf['extent']])
+        lyr["metadata"]['wms_srs'] = data_proj
+        
+        # Add the band's layer to the list.
+        layers.append(lyr)
+
+    # Update the list of layers.
+    mf['layers'] = layers
+
+    # And return the result.
+    return mf
+
+
+
+if __name__ == "__main__":
+
+    # Abort if there aren't exactly 2 arguments.
+    if len(sys.argv) != 3:
+        print("ERROR: Requires two arguments.")
+        sys.exit(print(__doc__))
+    
+    # Else abort if the first input argument isnt a valid file.
+    elif not os.path.isfile(sys.argv[1]):
+        print("ERROR: Argument 1 not a valid raster file: %s." % sys.argv[1])
+        sys.exit(print(__doc__))
+
+    # Else abort if the second input argument isn't a valid dir.
+    #elif not os.path.isdir(sys.argv[2]):
+        #print("ERROR: Argument 2 not a valid directory: %s." % sys.argv[2])
+        #sys.exit(print(__doc__))
+
+    # Else try to get a mapfile.
+    else:
+
+        # Get the output full path.
+        output_filename = os.path.splitext(os.path.basename(sys.argv[1]))[0]
+        output_filepath = os.path.abspath(sys.argv[2])
+        output_mapfile = os.path.join(output_filepath, output_filename + ".map")
+        
+        # Call function.
+        output_data = mapfile(sys.argv[1])
+
+        # Write to mapfile.
+        with open(output_mapfile, "w") as f:
+            f.write(mappyfile.dumps(output_data, indent=1, spacer="\t"))

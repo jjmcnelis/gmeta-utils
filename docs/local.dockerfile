@@ -15,16 +15,11 @@ RUN apt-get update && apt-get install -y \
 RUN add-apt-repository ppa:ubuntugis/ppa
 
 # Install high level GDAL/OGR interfaces.
-RUN pip3 install rasterio fiona
+RUN pip3 install rasterio fiona pandas
 
 # Copy xsv to /opt and link to /usr/bin.
-COPY ./xsv /opt/xsv
+COPY ./utils/xsv /opt/xsv
 RUN ln -s /opt/xsv /usr/bin/xsv
-
-# # Copy nco bashrc insert to /tmp.
-# COPY ./docs/bashtk.sh /tmp/bashtk.sh
-# # Insert to .bashrc
-# RUN cat /tmp/bashtk.sh >> ~/.bashrc
 
 # Copy metadata script to /opt.
 COPY ./gmeta /opt/gmeta

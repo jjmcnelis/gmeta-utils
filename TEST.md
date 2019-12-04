@@ -1,67 +1,75 @@
 
-# gmeta/test.sh
+# *`gmeta/test.sh`*
 
 
-## BUILD IMAGE: gmeta-local
+## BUILD IMAGE: `gmeta-local`
 
 ```
-Sending build context to Docker daemon  64.28MB
+Sending build context to Docker daemon  99.67MB
 Step 1/14 : FROM osgeo/gdal:ubuntu-full-latest
- ---> 4d01b5cea335
+ ---> 9a2eac996105
 Step 2/14 : ENV LC_ALL=C.UTF-8
  ---> Using cache
- ---> c72bc32bd8cb
+ ---> 915c62c05b19
 Step 3/14 : ENV LANG=C.UTF-8
  ---> Using cache
- ---> a04a91b39c70
+ ---> e8d0bf28577a
 Step 4/14 : RUN apt-get update && apt-get install -y     apt-utils     software-properties-common     python3-pip     python-pip     nco     --reinstall coreutils
  ---> Using cache
- ---> 4b76b15a1919
+ ---> 8f00185a21ef
 Step 5/14 : RUN add-apt-repository ppa:ubuntugis/ppa
  ---> Using cache
- ---> c5bf8ee7e301
-Step 6/14 : RUN pip3 install rasterio fiona
+ ---> 5758d6a3c6d5
+Step 6/14 : RUN pip3 install rasterio fiona pandas
  ---> Using cache
- ---> 61e6d061623a
-Step 7/14 : COPY ./xsv /opt/xsv
+ ---> 078b9b28f182
+Step 7/14 : COPY ./utils/xsv /opt/xsv
  ---> Using cache
- ---> 4d20f8e8c4b8
+ ---> 7080d226fcc8
 Step 8/14 : RUN ln -s /opt/xsv /usr/bin/xsv
  ---> Using cache
- ---> 4af14bc484c3
+ ---> 4788d686d24f
 Step 9/14 : COPY ./gmeta /opt/gmeta
- ---> 491d85b6b609
+ ---> 376859f96dc0
 Step 10/14 : RUN chmod +x /opt/gmeta
- ---> Running in 182a61b2bfce
-Removing intermediate container 182a61b2bfce
- ---> cf44a8267c40
+ ---> Running in 28938dd95135
+Removing intermediate container 28938dd95135
+ ---> f8c90739322c
 Step 11/14 : RUN ln -s /opt/gmeta /usr/bin/gmeta
- ---> Running in a1fe598aa92b
-Removing intermediate container a1fe598aa92b
- ---> b5267c729535
+ ---> Running in 7721b3ee4848
+Removing intermediate container 7721b3ee4848
+ ---> dfc872198cff
 Step 12/14 : VOLUME ["/data"]
- ---> Running in e7894e4f8d75
-Removing intermediate container e7894e4f8d75
- ---> 4dda74636f22
+ ---> Running in 4619d4adbbb7
+Removing intermediate container 4619d4adbbb7
+ ---> 1215b599499e
 Step 13/14 : WORKDIR /data
- ---> Running in ca0369378e46
-Removing intermediate container ca0369378e46
- ---> 67cad83a3a8f
+ ---> Running in 03c9061b22d1
+Removing intermediate container 03c9061b22d1
+ ---> cf61d5386f8e
 Step 14/14 : ENTRYPOINT ["gmeta"]
- ---> Running in 4f97dc678392
-Removing intermediate container 4f97dc678392
- ---> f6cb936ff0d8
-Successfully built f6cb936ff0d8
+ ---> Running in 5f18f75c329e
+Removing intermediate container 5f18f75c329e
+ ---> 824985cf2b01
+Successfully built 824985cf2b01
 Successfully tagged gmeta-local:latest
 ```
 
-## **RUN LOCAL:** gmeta-local
+## **RUN**
 
-### INFO: gmeta info
+### INFO: `gmeta info [FILE] `
 
-#### gmeta info \[MULTIDIM:daymet_v3_tmin_monavg_2017_hi.nc\]
+#### `gmeta info [MULTIDIM:daymet_v3_tmin_monavg_2017_hi.nc] `
 
-```
+```json
+
+# INPUT: ---------> 
+
+gdalmdiminfo daymet_v3_tmin_monavg_2017_hi.nc -nopretty 
+
+
+# RESULT: ---------> 
+
 {
   "type": "group",
   "driver": "netCDF",
@@ -224,16 +232,19 @@ Successfully tagged gmeta-local:latest
   }
 }
 
-{
-  "cmd": "gdalmdiminfo daymet_v3_tmin_monavg_2017_hi.nc -nopretty ",
-  "js": true
-}
-
 ```
 
-#### gmeta info \[RASTER:Snowmelt_Timing_North_America_2001.tif\]
+#### `gmeta info [RASTER:Snowmelt_Timing_North_America_2001.tif] `
 
-```
+```json
+
+# INPUT: ---------> 
+
+gdalinfo -proj4 -json Snowmelt_Timing_North_America_2001.tif 
+
+
+# RESULT: ---------> 
+
 {
   "description": "Snowmelt_Timing_North_America_2001.tif",
   "driverShortName": "GTiff",
@@ -246,7 +257,7 @@ Successfully tagged gmeta-local:latest
     19200
   ],
   "coordinateSystem": {
-    "wkt": "PROJCRS[\"Unknown_datum_based_upon_the_custom_spheroid_Sinusoidal\",\n BASEGEOGCRS[\"GCS_Unknown_datum_based_upon_the_custom_spheroid\",\n DATUM[\"Not_specified_based_on_custom_spheroid\",\n ELLIPSOID[\"Custom_spheroid\",6371007.181,0,\n LENGTHUNIT[\"metre\",1,\n ID[\"EPSG\",9001]]]],\n PRIMEM[\"Greenwich\",0,\n ANGLEUNIT[\"degree\",0.0174532925199433,\n ID[\"EPSG\",9122]]]],\n CONVERSION[\"unnamed\",\n METHOD[\"Sinusoidal\"],\n PARAMETER[\"Longitude of natural origin\",0,\n ANGLEUNIT[\"degree\",0.0174532925199433],\n ID[\"EPSG\",8802]],\n PARAMETER[\"False easting\",0,\n LENGTHUNIT[\"metre\",1],\n ID[\"EPSG\",8806]],\n PARAMETER[\"False northing\",0,\n LENGTHUNIT[\"metre\",1],\n ID[\"EPSG\",8807]]],\n CS[Cartesian,2],\n AXIS[\"easting\",east,\n ORDER[1],\n LENGTHUNIT[\"metre\",1,\n ID[\"EPSG\",9001]]],\n AXIS[\"northing\",north,\n ORDER[2],\n LENGTHUNIT[\"metre\",1,\n ID[\"EPSG\",9001]]]]",
+    "wkt": "PROJCRS[\"Unknown_datum_based_upon_the_custom_spheroid_Sinusoidal\",\n    BASEGEOGCRS[\"GCS_Unknown_datum_based_upon_the_custom_spheroid\",\n        DATUM[\"Not_specified_based_on_custom_spheroid\",\n            ELLIPSOID[\"Custom_spheroid\",6371007.181,0,\n                LENGTHUNIT[\"metre\",1,\n                    ID[\"EPSG\",9001]]]],\n        PRIMEM[\"Greenwich\",0,\n            ANGLEUNIT[\"degree\",0.0174532925199433,\n                ID[\"EPSG\",9122]]]],\n    CONVERSION[\"unnamed\",\n        METHOD[\"Sinusoidal\"],\n        PARAMETER[\"Longitude of natural origin\",0,\n            ANGLEUNIT[\"degree\",0.0174532925199433],\n            ID[\"EPSG\",8802]],\n        PARAMETER[\"False easting\",0,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8806]],\n        PARAMETER[\"False northing\",0,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8807]]],\n    CS[Cartesian,2],\n        AXIS[\"easting\",east,\n            ORDER[1],\n            LENGTHUNIT[\"metre\",1,\n                ID[\"EPSG\",9001]]],\n        AXIS[\"northing\",north,\n            ORDER[2],\n            LENGTHUNIT[\"metre\",1,\n                ID[\"EPSG\",9001]]]]",
     "dataAxisToSRSAxisMapping": [
       1,
       2
@@ -372,43 +383,167 @@ Successfully tagged gmeta-local:latest
   ]
 }
 
-{
-  "cmd": "gdalinfo -proj4 -json Snowmelt_Timing_North_America_2001.tif ",
-  "dcode": true,
-  "strp": true,
-  "js": true
-}
+```
+
+#### `gmeta info [TABLE:FLUXNET_Canada_Site_Information.csv] `
+
+```json
+
+# INPUT: ---------> 
+
+xsv stats FLUXNET_Canada_Site_Information.csv | python3 -c "import sys, json, pandas; print(pandas.read_csv(sys.stdin).to_json(orient='records'))" 
+
+
+# RESULT: ---------> 
+
+[
+  {
+    "field": "file_name",
+    "type": "Unicode",
+    "sum": null,
+    "min": "0-Fluxnet-Canada.zip",
+    "max": "SK-OldJackPine.zip",
+    "min_length": 10,
+    "max_length": 29,
+    "mean": null,
+    "stddev": null
+  },
+  {
+    "field": "num_files",
+    "type": "Integer",
+    "sum": 21494.0,
+    "min": "18",
+    "max": "1629",
+    "min_length": 2,
+    "max_length": 4,
+    "mean": 651.3333333333,
+    "stddev": 553.4272647546
+  },
+  {
+    "field": "siteid",
+    "type": "Integer",
+    "sum": 28846.0,
+    "min": "118",
+    "max": "9999",
+    "min_length": 3,
+    "max_length": 4,
+    "mean": 874.1212121212,
+    "stddev": 1871.8790066697
+  },
+  {
+    "field": "fluxnetid",
+    "type": "Unicode",
+    "sum": null,
+    "min": "CA-Ca1",
+    "max": null,
+    "min_length": 3,
+    "max_length": 6,
+    "mean": null,
+    "stddev": null
+  },
+  {
+    "field": "sitename",
+    "type": "Unicode",
+    "sum": null,
+    "min": "AB-Lethbridge Grassland",
+    "max": null,
+    "min_length": 3,
+    "max_length": 48,
+    "mean": null,
+    "stddev": null
+  },
+  {
+    "field": "site_desc",
+    "type": "Unicode",
+    "sum": null,
+    "min": "Alberta - Mixed Grass Prairie.",
+    "max": "Saskatchewan - Western Boreal; wetland.",
+    "min_length": 23,
+    "max_length": 91,
+    "mean": null,
+    "stddev": null
+  },
+  {
+    "field": "lat",
+    "type": "Float",
+    "sum": 1500.38613,
+    "min": "-99.9999",
+    "max": "55.88",
+    "min_length": 5,
+    "max_length": 8,
+    "mean": 45.4662463636,
+    "stddev": 26.0813225306
+  },
+  {
+    "field": "lon",
+    "type": "Float",
+    "sum": -13056.25786,
+    "min": "-9999.99",
+    "max": "-67.09933",
+    "min_length": 7,
+    "max_length": 10,
+    "mean": -395.6441775758,
+    "stddev": 1697.9127066651
+  },
+  {
+    "field": "start_year",
+    "type": "Integer",
+    "sum": 66000.0,
+    "min": "1993",
+    "max": "2012",
+    "min_length": 4,
+    "max_length": 4,
+    "mean": 2000.0,
+    "stddev": 4.6645016623
+  },
+  {
+    "field": "end_year",
+    "type": "Integer",
+    "sum": 66315.0,
+    "min": "2005",
+    "max": "2014",
+    "min_length": 4,
+    "max_length": 4,
+    "mean": 2009.5454545455,
+    "stddev": 2.5830556147
+  },
+  {
+    "field": "pi",
+    "type": "Unicode",
+    "sum": null,
+    "min": " Alan Barr",
+    "max": null,
+    "min_length": 3,
+    "max_length": 53,
+    "mean": null,
+    "stddev": null
+  },
+  {
+    "field": " pi_email",
+    "type": "Unicode",
+    "sum": null,
+    "min": "Brian_Amiro@umanitoba.ca",
+    "max": "s.murayama@aist.go.jp; alan.barr@ec.gc.ca",
+    "min_length": 3,
+    "max_length": 65,
+    "mean": null,
+    "stddev": null
+  }
+]
 
 ```
 
-#### gmeta info \[TABLE:FLUXNET_Canada_Site_Information.csv\]
+#### `gmeta info [VECTOR:ABoVE_240mgrid_tiles.shp] `
 
-```
-field,type,sum,min,max,min_length,max_length,mean,stddev
-file_name,Unicode,,0-Fluxnet-Canada.zip,SK-OldJackPine.zip,10,29,,
-num_files,Integer,21494,18,1629,2,4,651.3333333333334,553.4272647545813
-siteid,Integer,28846,118,9999,3,4,874.1212121212121,1871.8790066696756
-fluxnetid,Unicode,,CA-Ca1,n/a,3,6,,
-sitename,Unicode,,AB-Lethbridge Grassland,n/a,3,48,,
-site_desc,Unicode,,Alberta - Mixed Grass Prairie.,Saskatchewan - Western Boreal; wetland.,23,91,,
-lat,Float,1500.38613,-99.9999,55.88,5,8,45.466246363636365,26.0813225305522
-lon,Float,-13056.25786,-9999.99,-67.09933,7,10,-395.6441775757576,1697.9127066650933
-start_year,Integer,66000,1993,2012,4,4,2000,4.664501662297419
-end_year,Integer,66315,2005,2014,4,4,2009.5454545454545,2.583055614681971
-pi,Unicode,, Alan Barr,n/a,3,53,,
- pi_email,Unicode,,Brian_Amiro@umanitoba.ca,s.murayama@aist.go.jp; alan.barr@ec.gc.ca,3,65,,
+```json
+
+# INPUT: ---------> 
+
+fio info ABoVE_240mgrid_tiles.shp 
 
 
-{
-  "cmd": "xsv stats FLUXNET_Canada_Site_Information.csv ",
-  "dcode": true
-}
+# RESULT: ---------> 
 
-```
-
-#### gmeta info \[VECTOR:ABoVE_240mgrid_tiles.shp\]
-
-```
 {
   "driver": "ESRI Shapefile",
   "schema": {
@@ -434,16 +569,19 @@ pi,Unicode,, Alan Barr,n/a,3,53,,
   "count": 24
 }
 
-{
-  "cmd": "fio info ABoVE_240mgrid_tiles.shp ",
-  "js": true
-}
-
 ```
 
-#### gmeta info lyr=\[NUMBER:0\] \[VECTOR:ABoVE_240mgrid_tiles.shp\]
+#### `gmeta info lyr=[NUMBER:0] [VECTOR:ABoVE_240mgrid_tiles.shp] `
 
-```
+```json
+
+# INPUT: ---------> 
+
+fio info --layer=0 ABoVE_240mgrid_tiles.shp 
+
+
+# RESULT: ---------> 
+
 {
   "driver": "ESRI Shapefile",
   "schema": {
@@ -469,118 +607,253 @@ pi,Unicode,, Alan Barr,n/a,3,53,,
   "count": 24
 }
 
-{
-  "cmd": "fio info --layer=0 ABoVE_240mgrid_tiles.shp ",
-  "js": true
-}
+```
+
+### LIST: `gmeta list [CONSTRUCT (required): 'var', 'grp', 'dim'] [FILE] `
+
+#### `gmeta list var [TABLE:FLUXNET_Canada_Site_Information.csv] ` (lists column names in table)
+
+```json
+
+# INPUT: ---------> 
+
+xsv headers FLUXNET_Canada_Site_Information.csv -j 
+
+
+# RESULT: ---------> 
+
+file_name,num_files,siteid,fluxnetid,sitename,site_desc,lat,lon,start_year,end_year,pi,pi_email
 
 ```
 
-### FIND: gmeta find
+#### `gmeta list var [TABLE:ABoVE_240mgrid_tiles.shp] ` (lists fields in vector dataset)
 
-#### gmeta find var=\[KEYWORD:name\] \[TABLE:FLUXNET_Canada_Site_Information.csv\]
+```json
 
-```
-file_name sitename
+# INPUT: ---------> 
 
-{
-  "cmd": "xsv headers FLUXNET_Canada_Site_Information.csv -j | grep -o '.*name.*'",
-  "dcode": true,
-  "strp": true
-}
+fio info ABoVE_240mgrid_tiles.shp --indent 2 | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['schema']['properties'].keys())))" 
 
-```
 
-#### gmeta find var=\[KEYWORD:lon\] \[MULTID:daymet_v3_tmin_monavg_2017_hi.nc\]
+# RESULT: ---------> 
+
+Id,UID,Ahh,Avv,Bh,Bv
 
 ```
+
+#### `gmeta list var [MULTID:daymet_v3_tmin_monavg_2017_hi.nc] ` (lists variables names in multimensional dataset)
+
+```json
+
+# INPUT: ---------> 
+
+ncks --jsn -M daymet_v3_tmin_monavg_2017_hi.nc | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['variables'].keys()))) " 
+
+
+# RESULT: ---------> 
+
+lambert_conformal_conic,lat,lon,time,time_bnds,tmin,x,y
+
+```
+
+#### `gmeta list dim [MULTID:daymet_v3_tmin_monavg_2017_hi.nc] ` (and dimension names)
+
+```json
+
+# INPUT: ---------> 
+
+ncks --jsn -M daymet_v3_tmin_monavg_2017_hi.nc | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['dimensions'].keys()))) " 
+
+
+# RESULT: ---------> 
+
+time,nv,y,x
+
+```
+
+#### `gmeta list att [MULTID:daymet_v3_tmin_monavg_2017_hi.nc] ` (and attribute names)
+
+```json
+
+# INPUT: ---------> 
+
+ncks --jsn -M daymet_v3_tmin_monavg_2017_hi.nc | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['attributes'].keys()))) " 
+
+
+# RESULT: ---------> 
+
+start_year,source,Version_software,Version_data,Conventions,citation,references,NCO,nco_openmp_thread_number
+
+```
+
+#### `gmeta list grp [MULTID:daymet_v3_tmin_monavg_2017_hi.nc] ` (will also list group names)
+
+```json
+
+# INPUT: ---------> 
+
+ncks -m daymet_v3_tmin_monavg_2017_hi.nc | grep 'group:' | cut -d ':' -f 2 | cut -d ' ' -f 2 | sort 
+
+
+# RESULT: ---------> 
+
+
+
+```
+
+### COUNT: `gmeta count [CONSTRUCT (optional): 'var', 'dim'] [FILE] `
+
+#### `gmeta count [MULTID:daymet_v3_tmin_monavg_2017_hi.nc] ` (returns record count)
+
+```json
+
+# INPUT: ---------> 
+
+ncks --trd -M daymet_v3_tmin_monavg_2017_hi.nc | grep -E -i "Root record dimension 0:" | cut -f 8- -d ' ' | cut -f 2- -d '=' 
+
+
+# RESULT: ---------> 
+
+12
+
+```
+
+#### `gmeta count [TABLE:FLUXNET_Canada_Site_Information.csv] ` (returns row count)
+
+```json
+
+# INPUT: ---------> 
+
+xsv count FLUXNET_Canada_Site_Information.csv 
+
+
+# RESULT: ---------> 
+
+33
+
+
+```
+
+#### `gmeta count [VECTOR:ABoVE_240mgrid_tiles.shp] ` (returns feature count)
+
+```json
+
+# INPUT: ---------> 
+
+fio info --count ABoVE_240mgrid_tiles.shp 
+
+
+# RESULT: ---------> 
+
+24
+
+```
+
+#### `gmeta count [RASTER:Snowmelt_Timing_North_America_2001.tif] ` (returns band count)
+
+```json
+
+# INPUT: ---------> 
+
+gdalinfo -proj4 -json Snowmelt_Timing_North_America_2001.tif | python3 -c "import sys, json; print(len(json.load(sys.stdin)['bands']))" 
+
+
+# RESULT: ---------> 
+
+1
+
+
+```
+
+#### `gmeta count dim [MULTID:daymet_v3_tmin_monavg_2017_hi.nc] ` (returns dimension count)
+
+```json
+
+# INPUT: ---------> 
+
+ncks --jsn -M daymet_v3_tmin_monavg_2017_hi.nc | python3 -c "import sys, json; print(len(json.load(sys.stdin)['dimensions'])) " 
+
+
+# RESULT: ---------> 
+
+4
+
+```
+
+#### `gmeta count var [MULTID:daymet_v3_tmin_monavg_2017_hi.nc] ` (returns variable count)
+
+```json
+
+# INPUT: ---------> 
+
+ncks --jsn -M daymet_v3_tmin_monavg_2017_hi.nc | python3 -c "import sys, json; print(len(json.load(sys.stdin)['variables'])) " 
+
+
+# RESULT: ---------> 
+
+8
+
+```
+
+### FIND: `gmeta find var=[KEYWORD] [FILE] `
+
+#### `gmeta find var=[KEYWORD:lon] [TABLE:FLUXNET_Canada_Site_Information.csv] `
+
+```json
+
+# INPUT: ---------> 
+
+xsv headers FLUXNET_Canada_Site_Information.csv -j | grep -o '.*lon.*' 
+
+
+# RESULT: ---------> 
+
 lon
 
-{
-  "cmd": "ncks --trd -m daymet_v3_tmin_monavg_2017_hi.nc | grep -e ': type' | cut -f 1 -d ' ' | sed 's/://' | sort | grep -o '.*lon.*'",
-  "dcode": true,
-  "strp": true
-}
+```
+
+#### `gmeta find var=[KEYWORD:name] [TABLE:FLUXNET_Canada_Site_Information.csv] `
+
+```json
+
+# INPUT: ---------> 
+
+xsv headers FLUXNET_Canada_Site_Information.csv -j | grep -o '.*name.*' 
+
+
+# RESULT: ---------> 
+
+file_name,sitename
 
 ```
 
-#### gmeta find var=\[KEYWORD:lat\] \[MULTID:daymet_v3_tmin_monavg_2017_hi.nc\]
+#### `gmeta find var=[KEYWORD:lat] [MULTID:daymet_v3_tmin_monavg_2017_hi.nc] `
 
-```
+```json
+
+# INPUT: ---------> 
+
+ncks --trd -m daymet_v3_tmin_monavg_2017_hi.nc | grep -e ': type' | cut -f 1 -d ' ' | sed 's/://' | sort | grep -o '.*lat.*' 
+
+
+# RESULT: ---------> 
+
 lat
 
-{
-  "cmd": "ncks --trd -m daymet_v3_tmin_monavg_2017_hi.nc | grep -e ': type' | cut -f 1 -d ' ' | sed 's/://' | sort | grep -o '.*lat.*'",
-  "dcode": true,
-  "strp": true
-}
-
 ```
 
-#### gmeta find var=\[KEYWORD:time\] \[MULTID:daymet_v3_tmin_monavg_2017_hi.nc\]
+#### `gmeta find var=[KEYWORD:time] [MULTID:daymet_v3_tmin_monavg_2017_hi.nc] `
 
-```
-time time_bnds
+```json
 
-{
-  "cmd": "ncks --trd -m daymet_v3_tmin_monavg_2017_hi.nc | grep -e ': type' | cut -f 1 -d ' ' | sed 's/://' | sort | grep -o '.*time.*'",
-  "dcode": true,
-  "strp": true
-}
+# INPUT: ---------> 
 
-```
-
-### LIST: gmeta list
-
-#### gmeta list vars \[TABLE:FLUXNET_Canada_Site_Information.csv\]
-
-```
-file_name num_files siteid fluxnetid sitename site_desc lat lon start_year end_year pi pi_email
-
-{
-  "cmd": "xsv headers FLUXNET_Canada_Site_Information.csv -j ",
-  "dcode": true,
-  "strp": true
-}
-
-```
-
-#### gmeta list vars \[MULTID:daymet_v3_tmin_monavg_2017_hi.nc\]
-
-```
-lambert_conformal_conic lat lon time time_bnds tmin x y
-
-{
-  "cmd": "ncks --trd -m daymet_v3_tmin_monavg_2017_hi.nc | grep -e ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ",
-  "dcode": true,
-  "strp": true
-}
-
-```
-
-#### gmeta list grps \[MULTID:daymet_v3_tmin_monavg_2017_hi.nc\]
-
-```
+ncks --trd -m daymet_v3_tmin_monavg_2017_hi.nc | grep -e ': type' | cut -f 1 -d ' ' | sed 's/://' | sort | grep -o '.*time.*' 
 
 
-{
-  "cmd": "ncks -m daymet_v3_tmin_monavg_2017_hi.nc | grep 'group:' | cut -d ':' -f 2 | cut -d ' ' -f 2 | sort ",
-  "dcode": true,
-  "strp": true
-}
+# RESULT: ---------> 
 
-```
-
-#### gmeta list dims \[MULTID:daymet_v3_tmin_monavg_2017_hi.nc\]
-
-```
-nv time x y
-
-{
-  "cmd": "ncks --cdl -m daymet_v3_tmin_monavg_2017_hi.nc | cut -d ':' -f 1 | cut -d '=' -s -f 1 ",
-  "dcode": true,
-  "strp": true
-}
+time,time_bnds
 
 ```
 
