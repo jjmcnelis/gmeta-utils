@@ -5,7 +5,7 @@
 ## BUILD IMAGE: `gmeta-local`
 
 ```
-Sending build context to Docker daemon  99.67MB
+Sending build context to Docker daemon  99.71MB
 Step 1/14 : FROM osgeo/gdal:ubuntu-full-latest
  ---> 9a2eac996105
 Step 2/14 : ENV LC_ALL=C.UTF-8
@@ -30,28 +30,28 @@ Step 8/14 : RUN ln -s /opt/xsv /usr/bin/xsv
  ---> Using cache
  ---> 4788d686d24f
 Step 9/14 : COPY ./gmeta /opt/gmeta
- ---> 376859f96dc0
+ ---> 410896695f30
 Step 10/14 : RUN chmod +x /opt/gmeta
- ---> Running in 28938dd95135
-Removing intermediate container 28938dd95135
- ---> f8c90739322c
+ ---> Running in 5f218a72f678
+Removing intermediate container 5f218a72f678
+ ---> 71077f8373d3
 Step 11/14 : RUN ln -s /opt/gmeta /usr/bin/gmeta
- ---> Running in 7721b3ee4848
-Removing intermediate container 7721b3ee4848
- ---> dfc872198cff
+ ---> Running in be7d8c9d4071
+Removing intermediate container be7d8c9d4071
+ ---> b7882dd59e4b
 Step 12/14 : VOLUME ["/data"]
- ---> Running in 4619d4adbbb7
-Removing intermediate container 4619d4adbbb7
- ---> 1215b599499e
+ ---> Running in 998e6e368f66
+Removing intermediate container 998e6e368f66
+ ---> bcc34da134a0
 Step 13/14 : WORKDIR /data
- ---> Running in 03c9061b22d1
-Removing intermediate container 03c9061b22d1
- ---> cf61d5386f8e
+ ---> Running in 6c3f059971cf
+Removing intermediate container 6c3f059971cf
+ ---> d8c3d3049e82
 Step 14/14 : ENTRYPOINT ["gmeta"]
- ---> Running in 5f18f75c329e
-Removing intermediate container 5f18f75c329e
- ---> 824985cf2b01
-Successfully built 824985cf2b01
+ ---> Running in 8822078311d3
+Removing intermediate container 8822078311d3
+ ---> 2ef9fb4a5f64
+Successfully built 2ef9fb4a5f64
 Successfully tagged gmeta-local:latest
 ```
 

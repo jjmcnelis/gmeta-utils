@@ -5,6 +5,7 @@ import json
 import subprocess
 from string import Formatter
 from datetime import datetime as dt
+
 __update__ = dt.now()
 __version__ = 0.1
 __contact__ = "github:jjmcnelis"
@@ -57,9 +58,7 @@ __doc__ = '''
     #
     #
 '''.format( __update__, __version__, __contact__ )
-__usage__ = '''
 
-'''
 
 def _exit_error(message: str, doc: bool=True):
     message_ = "ERROR: {} Exiting.\n".format(message)
@@ -84,10 +83,6 @@ def _sys_call(cmd, dcode: bool=False, strp: bool=False, js: bool=False):
     # Call the utility in shell or list mode.
     kw = {'shell':True,'stderr':subprocess.STDOUT} if type(cmd) is str else {}
     sys_output = subprocess.check_output(cmd, **kw)
-    # if type(cmd) is str:
-    #     sys_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
-    # else:
-    #     sys_output = subprocess.check_output(cmd)
     # If dcode flag, decode as utf-8.
     if dcode: sys_output = sys_output.decode('utf-8')  
     # If the strp flag, strip newlines and tabs.
@@ -97,157 +92,6 @@ def _sys_call(cmd, dcode: bool=False, strp: bool=False, js: bool=False):
     # Return the formatted result!
     return sys_output
 
-
-#
-# PYTHON JSON GRAB:
-#  {COMMAND} | python3 -c "import sys, json; print(json.load(sys.stdin)['{FIELD}'])" 
-#  {COMMAND} | python3 -c "import sys, json, pandas; print(pandas.read_csv(sys.stdin).to_json())" 
-# python3 -c "import sys, json; print(json.load(sys.stdin)['schema']['properties'].keys())"
-
-__cmd__ = {
-    
-    ## TABULAR DATASETS
-
-    'tabl': {
-        'info': '''xsv stats {file} | python3 -c "import sys, json, pandas; print(pandas.read_csv(sys.stdin).to_json(orient='records'))" ''',
-        'count': '''xsv count {file} ''',
-        'find': '''xsv headers {file} -j | grep -o '.*{var}.*' ''',
-        'list_col': '''xsv headers {file} -j ''',
-    },
-    
-    ## MULTIDIMENSIONAL DATASETS
-
-    'mdim': {
-        'info': '''gdalmdiminfo {file} -nopretty ''',
-        'count_rec': '''ncks --trd -M {file} | grep -E -i "Root record dimension 0:" | cut -f 8- -d ' ' | cut -f 2- -d '=' ''',
-        'count_dim': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(len(json.load(sys.stdin)['dimensions'])) " ''',
-        'count_var': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(len(json.load(sys.stdin)['variables'])) " ''',
-        'count_att': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(len(json.load(sys.stdin)['attributes'])) " ''',
-        'list_dim': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['dimensions'].keys()))) " ''',
-        'list_var': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['variables'].keys()))) " ''',
-        'list_att': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['attributes'].keys()))) " ''',
-        'list_grp': '''ncks -m {file} | grep 'group:' | cut -d ':' -f 2 | cut -d ' ' -f 2 | sort ''',
-        'find': '''ncks --trd -m {file} | grep -e ': type' | cut -f 1 -d ' ' | sed 's/://' | sort | grep -o '.*{var}.*' ''',
-        #'time': '''ncks -v time --jsn --dt_fmt=2 {file} ''',
-        #'data': '''ncks -s "%f\n" -H -C -v {var} {file} ''',
-    },
-    
-    ## VECTOR DATASETS
-
-    'vect': {
-        'info': '''fio info {file} ''',
-        #'info': '''ogrinfo {file} -ro -al -so ''',
-        'count': '''fio info --count {file} ''',
-        'list_fld': '''fio info {file} --indent 2 | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['schema']['properties'].keys())))" ''',
-        'lyr': {
-            'info': '''fio info --layer={lyr} {file} ''',
-        },
-    },
-
-    ## RASTER DATASETS
-
-    'rast': {
-        
-        ### INFO
-        #'info': '''rio info -v {file} ''',
-        'info': '''gdalinfo -proj4 -json {file} ''',
-        
-        ### COUNT
-        #'count': '''rio info {file} | python3 -c "import sys, json; print(json.load(sys.stdin)['count'])" ''',
-        'count': '''gdalinfo -proj4 -json {file} | python3 -c "import sys, json; print(len(json.load(sys.stdin)['bands']))" '''
-    
-    },
-
-}
-
-
-class UnseenFormatter(Formatter):
-    '''
-    ```python
-    >>> string = "{number_of_sheep} sheep {has} run away"
-    >>> other_dict = {'number_of_sheep' : 1}
-    >>> fmt = UnseenFormatter()
-    >>> _sys_call(fmt.format(string, **other_dict)
-    1 sheep has run away
-    ```
-    '''
-    def get_value(self, key, args, kwds):
-        if isinstance(key, str):
-            try:
-                return kwds[key]
-            except KeyError:
-                return key
-        else:
-            return Formatter.get_value(key, args, kwds)
-
-
-fmt = UnseenFormatter()
-
-__lookup__ = {
-    
-    ## PRINT COMPLETE METADATA (as json)
-    
-    "info": {
-        "tabl": lambda a: {'cmd': fmt.format(__cmd__['tabl']['info'], **a), 'dcode': True, 'js': True},
-        "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['info'], **a), 'js': True},
-        "rast": lambda a: {'cmd': fmt.format(__cmd__['rast']['info'], **a), 'dcode': True, 'js': True},
-        "vect": lambda a: {'cmd': fmt.format(__cmd__['vect']['info'], **a), 'js': True},
-        "lyr": {
-            'vect': lambda a: {'cmd': fmt.format( __cmd__['vect']['lyr']['info'], **a), 'js': True},
-        },
-    },
-    
-    ## COUNT THE NUMBER OF OCCURRENCES OF A DATA CONSTRUCT
-    
-    "count": {
-        "tabl": lambda a: {'cmd': fmt.format(__cmd__['tabl']['count'], **a), 'dcode': True,},
-        "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['count_rec'], **a), 'dcode': True, 'strp': True},
-        "vect": lambda a: {'cmd': fmt.format(__cmd__['vect']['count'], **a), 'dcode': True, 'strp': True},
-        "rast": lambda a: {'cmd': fmt.format(__cmd__['rast']['count'], **a), 'dcode': True},
-        "dim": {
-            "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['count_dim'], **a), 'dcode':True, 'strp': True},
-        },
-        "var": {
-            "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['count_var'], **a), 'dcode': True, 'strp': True},
-        },
-    },
-    
-    ## FIND THE NAMES OF DATA CONSTRUCTS
-    
-    "find": {
-        "var": {
-            "tabl": lambda a: {'cmd': fmt.format( __cmd__['tabl']['find'], **a), 'dcode': True, 'strp': True}, 
-            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['find'], **a), 'dcode': True, 'strp': True},
-        },
-    },
-    
-    ## LIST THE NAMES OF DATA CONSTRUCTS
-    
-    "list": {
-        "grp": {
-            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['list_grp'], **a), 'dcode': True, 'strp': True},
-        },
-        "dim": {
-            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['list_dim'], **a), 'dcode': True, 'strp': True},
-        },
-        "var": {
-            "tabl": lambda a: {'cmd': fmt.format( __cmd__['tabl']['list_col'], **a), 'dcode': True, 'strp': True}, 
-            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['list_var'], **a), 'dcode': True, 'strp': True},
-            "vect": lambda a: {'cmd': fmt.format( __cmd__['vect']['list_fld'], **a), 'dcode': True, 'strp': True},
-        },
-        "att": {
-            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['list_att'], **a), 'dcode': True, 'strp': True},
-        },
-    },
-    
-    ## DATA PRINTING
-    
-    # "data": {
-    #     "var": {
-    #         "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['data'], **a), 'dcode': True, 'strp': True},
-    #     },
-    # },
-}
 
 __config__ = {
     # Various outputs from gdal-config.
@@ -270,6 +114,130 @@ __config__ = {
         'vect': ['shp', 'kml', 'kmz', 'geojson', 'json', 'dbf'],
         'mdim': ['hdf4', 'hdf5', 'h5', 'nc', 'nc4', 'dods'],
     }
+}
+
+
+__cmd__ = {
+    ## TABULAR DATASETS
+    'tabl': {
+        'info': '''xsv stats {file} | python3 -c "import sys, json, pandas; print(pandas.read_csv(sys.stdin).to_json(orient='records'))" ''',
+        'count': '''xsv count {file} ''',
+        'find': '''xsv headers {file} -j | grep -o '.*{var}.*' ''',
+        'list_col': '''xsv headers {file} -j ''',
+    },
+    ## MULTIDIMENSIONAL DATASETS
+    'mdim': {
+        'info': '''gdalmdiminfo {file} -nopretty ''',
+        'count_rec': '''ncks --trd -M {file} | grep -E -i "Root record dimension 0:" | cut -f 8- -d ' ' | cut -f 2- -d '=' ''',
+        'count_dim': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(len(json.load(sys.stdin)['dimensions'])) " ''',
+        'count_var': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(len(json.load(sys.stdin)['variables'])) " ''',
+        'count_att': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(len(json.load(sys.stdin)['attributes'])) " ''',
+        'list_dim': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['dimensions'].keys()))) " ''',
+        'list_var': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['variables'].keys()))) " ''',
+        'list_att': '''ncks --jsn -M {file} | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['attributes'].keys()))) " ''',
+        'list_grp': '''ncks -m {file} | grep 'group:' | cut -d ':' -f 2 | cut -d ' ' -f 2 | sort ''',
+        'find': '''ncks --trd -m {file} | grep -e ': type' | cut -f 1 -d ' ' | sed 's/://' | sort | grep -o '.*{var}.*' ''',
+        #'time': '''ncks -v time --jsn --dt_fmt=2 {file} ''',
+        #'data': '''ncks -s "%f\n" -H -C -v {var} {file} ''',
+    },
+    ## VECTOR DATASETS
+    'vect': {
+        'info': '''fio info {file} ''',
+        #'info': '''ogrinfo {file} -ro -al -so ''',
+        'count': '''fio info --count {file} ''',
+        'list_fld': '''fio info {file} --indent 2 | python3 -c "import sys, json; print(','.join(list(json.load(sys.stdin)['schema']['properties'].keys())))" ''',
+        'lyr': {
+            'info': '''fio info --layer={lyr} {file} ''',
+        },
+    },
+    ## RASTER DATASETS
+    'rast': {
+        #'info': '''rio info -v {file} ''',
+        'info': '''gdalinfo -proj4 -json {file} ''',
+        #'count': '''rio info {file} | python3 -c "import sys, json; print(json.load(sys.stdin)['count'])" ''',
+        'count': '''gdalinfo -proj4 -json {file} | python3 -c "import sys, json; print(len(json.load(sys.stdin)['bands']))" '''
+    },
+
+}
+
+
+class YaBoyFormatter(Formatter):
+    '''
+    ```python
+    >>> string = "{number_of_sheep} sheep {has} run away"
+    >>> other_dict = {'number_of_sheep' : 1}
+    >>> fmt = YaBoyFormatter()
+    >>> _sys_call(fmt.format(string, **other_dict)
+    1 sheep has run away
+    ```
+    '''
+    def get_value(self, key, args, kwds):
+        if isinstance(key, str):
+            try:
+                return kwds[key]
+            except KeyError:
+                return key
+        else:
+            return Formatter.get_value(key, args, kwds)
+
+
+fmt = YaBoyFormatter()
+
+
+__lookup__ = {
+    ## PRINT COMPLETE METADATA (as json)
+    "info": {
+        "tabl": lambda a: {'cmd': fmt.format(__cmd__['tabl']['info'], **a), 'dcode': True, 'js': True},
+        "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['info'], **a), 'js': True},
+        "rast": lambda a: {'cmd': fmt.format(__cmd__['rast']['info'], **a), 'dcode': True, 'js': True},
+        "vect": lambda a: {'cmd': fmt.format(__cmd__['vect']['info'], **a), 'js': True},
+        "lyr": {
+            'vect': lambda a: {'cmd': fmt.format( __cmd__['vect']['lyr']['info'], **a), 'js': True},
+        },
+    },
+    ## COUNT THE NUMBER OF OCCURRENCES OF A DATA CONSTRUCT
+    "count": {
+        "tabl": lambda a: {'cmd': fmt.format(__cmd__['tabl']['count'], **a), 'dcode': True,},
+        "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['count_rec'], **a), 'dcode': True, 'strp': True},
+        "vect": lambda a: {'cmd': fmt.format(__cmd__['vect']['count'], **a), 'dcode': True, 'strp': True},
+        "rast": lambda a: {'cmd': fmt.format(__cmd__['rast']['count'], **a), 'dcode': True},
+        "dim": {
+            "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['count_dim'], **a), 'dcode':True, 'strp': True},
+        },
+        "var": {
+            "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['count_var'], **a), 'dcode': True, 'strp': True},
+        },
+    },
+    ## FIND THE NAMES OF DATA CONSTRUCTS
+    "find": {
+        "var": {
+            "tabl": lambda a: {'cmd': fmt.format( __cmd__['tabl']['find'], **a), 'dcode': True, 'strp': True}, 
+            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['find'], **a), 'dcode': True, 'strp': True},
+        },
+    },
+    ## LIST THE NAMES OF DATA CONSTRUCTS
+    "list": {
+        "grp": {
+            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['list_grp'], **a), 'dcode': True, 'strp': True},
+        },
+        "dim": {
+            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['list_dim'], **a), 'dcode': True, 'strp': True},
+        },
+        "var": {
+            "tabl": lambda a: {'cmd': fmt.format( __cmd__['tabl']['list_col'], **a), 'dcode': True, 'strp': True}, 
+            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['list_var'], **a), 'dcode': True, 'strp': True},
+            "vect": lambda a: {'cmd': fmt.format( __cmd__['vect']['list_fld'], **a), 'dcode': True, 'strp': True},
+        },
+        "att": {
+            "mdim": lambda a: {'cmd': fmt.format( __cmd__['mdim']['list_att'], **a), 'dcode': True, 'strp': True},
+        },
+    },
+    ## DATA PRINTING
+    # "data": {
+    #     "var": {
+    #         "mdim": lambda a: {'cmd': fmt.format(__cmd__['mdim']['data'], **a), 'dcode': True, 'strp': True},
+    #     },
+    # },
 }
 
 
@@ -331,6 +299,7 @@ def _handle_args():
 
     # Return the populated call string in a dict with args for system call.
     return func[in_frmt](kwrg)
+
 
 
 if __name__ == "__main__":

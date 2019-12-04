@@ -2,7 +2,7 @@
 
 >a structured interface to common geodata utils (gdal + ogr + nco)
 
-*go straight to **[`TEST.md`](TEST.md)** to see what goes in and what comes out.*
+## go straight to *[`TEST.md`](TEST.md)* to see what goes in/comes out
 
 **Key features:**
 
